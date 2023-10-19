@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1> Blu-Ray Stock</h1>
+    <style>
+        .float-buttons{
+            display: flex;
+            gap: 10px;
+        }
+        .float-img {
+            float: left;
+            margin-right: 10px;
+            margin-bottom: 5px;
+            border: solid black 1px
+        }
+        .float-delete{
+            float: right
+        }
+    </style>
+
+    <br/>
+    <hr/>
+    <h2>Add New Blu-Ray</h2>
+    <form method="POST" action="{% url 'bluRayInfo:add' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" name="name" id="name">
+        </div>
+        <br/>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <input type="text" class="form-control" name="description" id="description">
+        </div>
+        <br/>
+        <div class="form-group">
+            <label for="image">Image:</label>
+            <input type="file" class="form-control-file" name="image" id="image">
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-secondary">Add</button>
+    </form>
+
+    <hr/>
+    <h2>Edit Existing Blu-Ray</h2>
+    <form method="POST" action="{% url 'bluRayInfo:edit' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="editMovie">Select Movie:</label>
+            <select name="editMovie" class="form-control" id="editMovie">
+                {% for item in all %}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br/>
+        <div class="form-group">
+            <label for="newName">New Name:</label>
+            <input type="text" class="form-control" name="newName" id="newName">
+        </div>
+        <br/>
+        <div class="form-group">
+            <label for="newDescription">New Description:</label>
+            <input type="text" class="form-control" name="newDescription" id="newDescription">
+        </div>
+        <br/>
+        <div class="form-group">
+            <label for="newImage">New Image:</label>
+            <input type="file" class="form-control-file" name="newImage" id="newImage">
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-secondary">Edit</button>
+    </form>
+    
+    <hr/>
+    <h2>Search and Sort</h2>
+    <div class="float-buttons">
+        <form method="get" action="{% url 'bluRayInfo:searchMovies' %}">
+            <input type="text" name="search" placeholder="Search by Synopsis">
+            <input type="submit" value="Search">
+        </form>
+        <form method="get" action="{% url 'bluRayInfo:sortID' %}">
+            <input type="submit" value="Sort by ID">
+        </form>
+        <form method="get" action="{% url 'bluRayInfo:sortMovies' %}">
+            <input type="submit" value="Sort Alphabetically">
+        </form>
+    </div>
+
+    <hr/>
+    <h2>Collection</h2>
+    {% for item in all %}
+        <br>
+        <strong>{{ item.name }}</strong><br/>
+        <br/><img src = "{{ item.image.url }}" width = 150 class = "float-img">
+        Synopsis:<br/>{{ item.description }}
+
+        <div style="clear:left"></div>
+
+        <div style="float:right">
+            <form method="POST" action="{% url 'bluRayInfo:delete' item.id %}">
+                {% csrf_token %}
+                <input type="submit" value="Delete" class="float-delete">
+            </form>
+        </div>
+        <div style="clear:both"></div>
+        <hr/>
+    {% endfor %}
+{% endblock %}
